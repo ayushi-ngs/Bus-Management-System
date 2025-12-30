@@ -1,13 +1,14 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Scanner;
+import exceptions.RouteNotFound;
+
+import java.time.LocalDate;
+import java.util.*;
 
 public class BusService {
         Passenger passenger;
         Scanner input = new Scanner(System.in);
         HashSet<Integer> ID = new HashSet<>();
         ArrayList<Passenger> passengers = new ArrayList<>();
+        List<BusRoute> busRoutes = new ArrayList<>();
         public void registerPassenger(Passenger passenger){
 
             if(passenger==null){
@@ -41,5 +42,17 @@ public class BusService {
                 }
                 System.out.println("Logged In as " + p.getName());
             }
+        }
+        public void addRoutes(BusRoute busRoute) throws RouteNotFound {
+            if(busRoute==null){
+                throw new RouteNotFound("Route not found!");
+            }
+            busRoutes.add(busRoute);
+            System.out.println("Routes added successfully!");
+        }
+
+        public void searchBusRoutes(String source, String destination, LocalDate date) throws RouteNotFound {
+            
+
         }
 }

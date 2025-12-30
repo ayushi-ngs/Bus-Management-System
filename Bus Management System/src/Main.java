@@ -1,11 +1,31 @@
+import exceptions.RouteNotFound;
+
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Main {
+
+    public static LocalDate DateInput() {
+        Scanner input = new Scanner(System.in);
+        LocalDate d = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        while (d == null) {
+            System.out.println("Please enter a valid date");
+            String date = input.nextLine();
+            try {
+                d = LocalDate.parse(date, formatter);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date !");
+            }
+        }
+        return d;
+    }
     public static void main(String[] args) {
         Passenger passenger=null;
+        BusRoute busRoute=null;
         BusService service=new BusService();
         Scanner input = new Scanner(System.in);
         boolean admin=true;
@@ -37,11 +57,49 @@ public class Main {
                         int achoice=input.nextInt();
                         switch (achoice) {
                             case 1:{
-                                System.out.println("Enter from route:");
-                                String from = input.nextLine();
-                                System.out.println("Enter to route:");
-                                String to = input.nextLine();
-
+                                try{
+                                    System.out.println("Enter route Id:");
+                                    int id=input.nextInt();
+                                    System.out.println("Enter from route:");
+                                    String from = input.nextLine();
+                                    System.out.println("Enter to route:");
+                                    String to = input.nextLine();
+                                    System.out.println("Enter arrival time:");
+                                    LocalTime at=null;
+                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                                    while(at==null) {
+                                        System.out.println("Please enter a valid time!");
+                                        String time = input.nextLine();
+                                        try {
+                                            at = LocalTime.parse(time, formatter);
+                                        } catch (DateTimeParseException e) {
+                                            System.out.println("Invalid Time !");
+                                        }
+                                    }
+                                    System.out.println("Enter departure time:");
+                                    LocalTime dt=null;
+                                    DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                                    while(dt==null) {
+                                        System.out.println("Please enter a valid time!");
+                                        String dtime = input.nextLine();
+                                        try {
+                                            dt = LocalTime.parse(dtime, dtformatter);
+                                        } catch (DateTimeParseException e) {
+                                            System.out.println("Invalid Time !");
+                                        }
+                                    }
+                                    System.out.println("Enter date:");
+                                    LocalDate d=DateInput();
+                                    System.out.println("Enter total number of seats:");
+                                    int seats=input.nextInt();
+                                    System.out.println("Enter price:");
+                                    double price=input.nextDouble();
+                                    busRoute=new BusRoute(id,from,to,at,dt,d,seats,price);
+                                    service.addRoutes(busRoute);
+                                }
+                                catch(RouteNotFound e){
+                                    System.out.println(e.getMessage());
+                                }
                                 adminChoice=true;
                                 break;
                             }
@@ -54,22 +112,18 @@ public class Main {
                                 break;
                             }
                             case 4:{
-                                input.nextLine();
-                                System.out.println("Enter the source route: ");
-                                String source = input.nextLine();
-                                System.out.println("Enter the destination route: ");
-                                String destination = input.nextLine();
-                                System.out.println("Enter Date of booking: ");
-                                LocalDate d=null;
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                                while(d==null) {
-                                    System.out.println("Please enter a valid date");
-                                    String date = input.nextLine();
-                                    try {
-                                        d = LocalDate.parse(date, formatter);
-                                    } catch (DateTimeParseException e) {
-                                        System.out.println("Invalid date !");
-                                    }
+                                try {
+                                    input.nextLine();
+                                    System.out.println("Enter the source route: ");
+                                    String source = input.nextLine();
+                                    System.out.println("Enter the destination route: ");
+                                    String destination = input.nextLine();
+                                    System.out.println("Enter Date of booking: ");
+                                    LocalDate d = DateInput();
+                                    service.searchBusRoutes(source,destination,d);
+                                }
+                                catch(RouteNotFound e){
+                                    System.out.println(e.getMessage());
                                 }
                                 adminChoice=true;
                                 break;
@@ -126,6 +180,12 @@ public class Main {
                                     int pchoice=input.nextInt();
                                     switch (pchoice) {
                                         case 1:{
+                                            System.out.println("Enter source city:");
+                                            String source=input.nextLine();
+                                            System.out.println("Enter destination city:");
+                                            String destination=input.nextLine();
+                                            System.out.println("Enter date:");
+
                                             passChoice=true;
                                             break;
                                         }

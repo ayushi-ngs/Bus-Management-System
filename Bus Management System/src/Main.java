@@ -96,25 +96,24 @@ public class Main {
                             case 1:{
                                 System.out.println("Enter Passenger ID:");
                                 int ID=input.nextInt();
+                                input.nextLine();
                                 System.out.println("Enter Passenger name: ");
                                 String pname= input.nextLine();
+                                System.out.println("Enter email id: ");
+                                String email=input.nextLine();
+                                System.out.println("Enter phone number: ");
+                                long phone=input.nextLong();
+                                input.nextLine();
                                 System.out.println("Enter Passenger password: ");
                                 String pass = input.nextLine();
-                                passenger=new Passenger(ID,pname,pass);
-                                service.addPassenger(passenger);
+                                passenger=new Passenger(ID,pname,email,phone,pass);
+                                service.registerPassenger(passenger);
                                 passReg=true;
                                 break;
                             }
                             case 2:{
                                 input.nextLine();
-                                System.out.println("Enter Passenger name: ");
-                                String name = input.nextLine();
-                                System.out.println("Enter Passenger password: ");
-                                String password = input.nextLine();
-                                if(!name.equalsIgnoreCase(passenger.getName()) && !password.equals(passenger.getPassword())){
-                                    System.out.println("Wrong credentials! Register Yourself First if not done!");
-                                }
-                                System.out.println("Logged In as " + name);
+                                service.login();
                                 passReg=true;
                                 break;
                             }
@@ -181,7 +180,6 @@ public class Main {
                     admin=true;
                 }
             }
-
         }
 
     }

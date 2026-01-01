@@ -1,39 +1,96 @@
+import exceptions.BookingNotFound;
 import exceptions.RouteNotFound;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
 
-    public static LocalDate DateInput() {
-        Scanner input = new Scanner(System.in);
-        LocalDate d = null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        while (d == null) {
-            System.out.println("Please enter a valid date");
-            String date = input.nextLine();
+    public static int readInt(Scanner scanner,String Message)
+    {
+        int input;
+        while(true){
+            System.out.println(Message);
             try {
-                d = LocalDate.parse(date, formatter);
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date !");
+                input = scanner.nextInt();
+                return input;
+            }
+            catch (InputMismatchException e){
+                System.out.println("Enter numbers only!");
+                scanner.nextLine();
             }
         }
-        return d;
+
+    }
+    public static double readDouble(Scanner scanner,String Message)
+    {
+        double input;
+        while(true){
+            System.out.println(Message);
+            try {
+                input = scanner.nextDouble();
+                return input;
+            }
+            catch (InputMismatchException e){
+                System.out.println("Enter numbers only!");
+            }
+        }
+
+    }
+    public static LocalDate DateInput(String message) {
+        Scanner input = new Scanner(System.in);
+        LocalDate d = null;
+        String date;
+        DateTimeFormatter dtf;
+        while(true){
+            System.out.println(message);
+            try {
+                dtf = DateTimeFormatter.ofPattern("dd-MM-yy");
+                date=input.nextLine();
+                d = LocalDate.parse(date,dtf);
+                return d;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date! Enter in dd-MM-yy format!");
+            }
+        }
+    }
+
+    public static LocalTime TimeInput(String message) {
+        Scanner input = new Scanner(System.in);
+        LocalTime time=null;
+        String dtime;
+        DateTimeFormatter dtf;
+        while(true){
+            System.out.println(message);
+            try {
+                dtf = DateTimeFormatter.ofPattern("HH:mma");
+                dtime=input.nextLine();
+                time = LocalTime.parse(dtime,dtf);
+                return time;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid Time! Enter in HH:mm format!");
+            }
+        }
     }
     public static void main(String[] args) {
         Passenger passenger=null;
         BusRoute busRoute=null;
+        SeatBooking seatBooking=null;
         BusService service=new BusService();
         Scanner input = new Scanner(System.in);
         boolean admin=true;
+        System.out.println("---------------------------------------");
+        System.out.println("|    Welcome to Bus Booking System    |");
+        System.out.println("---------------------------------------");
         while(admin==true){
             System.out.println("Login as: ");
             System.out.print("1. Admin\n"+ "2. Passenger\n"+ "3. LogOut\n");
-            System.out.println("Enter your choice: ");
-            int choice = input.nextInt();
+            //System.out.println("Enter your choice: ");
+            int choice = readInt(input,"Enter your choice: ");
             input.nextLine();
             switch (choice) {
                 case 1:{
@@ -53,47 +110,22 @@ public class Main {
                                          "3. View booking statistics\n"+
                                          "4. Search Bookings\n"+
                                          "5. LogOut\n");
-                        System.out.println("Enter your choice: ");
-                        int achoice=input.nextInt();
+                        //System.out.println("Enter your choice: ");
+                        int achoice = readInt(input,"Enter your choice: ");
                         switch (achoice) {
                             case 1:{
                                 try{
-                                    System.out.println("Enter route Id:");
-                                    int id=input.nextInt();
+                                    int id=readInt(input,"Enter route Id: ");
+                                    input.nextLine();
                                     System.out.println("Enter from route:");
                                     String from = input.nextLine();
                                     System.out.println("Enter to route:");
                                     String to = input.nextLine();
-                                    System.out.println("Enter arrival time:");
-                                    LocalTime at=null;
-                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                                    while(at==null) {
-                                        System.out.println("Please enter a valid time!");
-                                        String time = input.nextLine();
-                                        try {
-                                            at = LocalTime.parse(time, formatter);
-                                        } catch (DateTimeParseException e) {
-                                            System.out.println("Invalid Time !");
-                                        }
-                                    }
-                                    System.out.println("Enter departure time:");
-                                    LocalTime dt=null;
-                                    DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                                    while(dt==null) {
-                                        System.out.println("Please enter a valid time!");
-                                        String dtime = input.nextLine();
-                                        try {
-                                            dt = LocalTime.parse(dtime, dtformatter);
-                                        } catch (DateTimeParseException e) {
-                                            System.out.println("Invalid Time !");
-                                        }
-                                    }
-                                    System.out.println("Enter date:");
-                                    LocalDate d=DateInput();
-                                    System.out.println("Enter total number of seats:");
-                                    int seats=input.nextInt();
-                                    System.out.println("Enter price:");
-                                    double price=input.nextDouble();
+                                    LocalTime dt=TimeInput("Enter arrival time:");
+                                    LocalTime at=TimeInput("Enter departure time:");
+                                    LocalDate d=DateInput("Enter Date: ");
+                                    int seats=readInt(input,"Enter total number of seats: ");
+                                    double price=readDouble(input,"Enter price:");
                                     busRoute=new BusRoute(id,from,to,at,dt,d,seats,price);
                                     service.addRoutes(busRoute);
                                 }
@@ -104,31 +136,27 @@ public class Main {
                                 break;
                             }
                             case 2:{
+                                service.viewAllBookings();
                                 adminChoice=true;
                                 break;
                             }
                             case 3:{
+                                service.viewStatistics();
                                 adminChoice=true;
                                 break;
                             }
                             case 4:{
                                 try {
-                                    input.nextLine();
-                                    System.out.println("Enter the source route: ");
-                                    String source = input.nextLine();
-                                    System.out.println("Enter the destination route: ");
-                                    String destination = input.nextLine();
-                                    System.out.println("Enter Date of booking: ");
-                                    LocalDate d = DateInput();
-                                    service.searchBusRoutes(source,destination,d);
-                                }
-                                catch(RouteNotFound e){
+                                    LocalDate searchDate=DateInput("Enter Date to search: ");
+                                    service.searchBookingAsAdmin(searchDate);
+                                } catch (BookingNotFound e) {
                                     System.out.println(e.getMessage());
                                 }
                                 adminChoice=true;
                                 break;
                             }
                             case 5:{
+                                System.out.println("Logged out as admin!");
                                 adminChoice=false;
                                 break;
                             }
@@ -145,12 +173,11 @@ public class Main {
                     boolean passReg=true;
                     while(passReg==true){
                         System.out.print("1. Register\n2. Login\n"+"3. Go to menu\n"+"4. Exit\n");
-                        System.out.println("Enter your choice: ");
-                        int prchoice=input.nextInt();
+                        //System.out.println("Enter your choice: ");
+                        int prchoice = readInt(input,"Enter your choice: ");
                         switch (prchoice) {
                             case 1:{
-                                System.out.println("Enter Passenger ID:");
-                                int ID=input.nextInt();
+                                int ID=readInt(input,"Enter Passenger ID: ");
                                 input.nextLine();
                                 System.out.println("Enter Passenger name: ");
                                 String pname= input.nextLine();
@@ -175,29 +202,70 @@ public class Main {
                             case 3:{
                                 boolean passChoice=true;
                                 while(passChoice==true){
-                                    System.out.print("1.Search for Buses\n"+"2. Book Tickets\n"+"3. View Booking\n"+"4. Cancel Booking\n"+"5. Exit\n");
-                                    System.out.println("Enter your choice: ");
-                                    int pchoice=input.nextInt();
+                                    System.out.print("1. Search for Buses\n"+
+                                            "2. Book Tickets\n"+
+                                            "3. View Booking\n"+
+                                            "4. Cancel Booking\n"+
+                                            "5. Exit\n");
+                                    //System.out.println("Enter your choice: ");
+                                    int pchoice = readInt(input,"Enter your choice: ");
+                                    input.nextLine();
                                     switch (pchoice) {
                                         case 1:{
-                                            System.out.println("Enter source city:");
-                                            String source=input.nextLine();
-                                            System.out.println("Enter destination city:");
-                                            String destination=input.nextLine();
-                                            System.out.println("Enter date:");
-
+                                            try {
+                                                System.out.println("Enter the source route: ");
+                                                String source = input.nextLine();
+                                                System.out.println("Enter the destination route: ");
+                                                String destination = input.nextLine();
+                                                LocalDate d = DateInput("Enter Date");
+                                                service.searchBusRoutes(source,destination,d);
+                                            }
+                                            catch(RouteNotFound e){
+                                                System.out.println(e.getMessage());
+                                            }
                                             passChoice=true;
                                             break;
                                         }
                                         case 2:{
+                                            try {
+                                                int id = readInt(input,"Enter routeId: ");
+                                                int seats =readInt(input,"Enter number of seats: ");
+                                                input.nextLine();
+                                                System.out.println("Enter your name ");
+                                                String name = input.nextLine();
+                                                System.out.println("Enter your email id: ");
+                                                String email = input.nextLine();
+                                                System.out.println("Enter your phone number: ");
+                                                long phone = input.nextLong();
+                                                seatBooking = new SeatBooking(seats, name, email, phone);
+                                                service.booking(id, seatBooking);
+                                            }
+                                            catch (RouteNotFound e){
+                                                System.out.println(e.getMessage());
+                                            }
                                             passChoice=true;
                                             break;
                                         }
                                         case 3:{
+                                            try {
+                                                System.out.println("Enter your booking Id:");
+                                                String id = input.nextLine();
+                                                service.viewBooking(id);
+                                            }catch (BookingNotFound e){
+                                                System.out.println(e.getMessage());
+                                            }
                                             passChoice=true;
                                             break;
                                         }
                                         case 4:{
+                                            try {
+                                                System.out.println("Enter your booking Id:");
+                                                String id = input.nextLine();
+                                                service.cancelBooking(id);
+                                            }
+                                            catch (BookingNotFound e){
+                                                System.out.println(e.getMessage());
+                                            }
                                             passChoice=true;
                                             break;
                                         }
@@ -232,7 +300,9 @@ public class Main {
                     break;
                 }
                 case 3:{
-                    System.out.println("Thankyou for using BusRoute Booking System");
+                    System.out.println("----------------------------------------------------");
+                    System.out.println("|    Thankyou for using BusRoute Booking System    |");
+                    System.out.println("----------------------------------------------------");
                     admin=false;
                     break;
                 }

@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class BusRoute {
+public class BusRoute implements Serializable {
     private int routeId;
     private String from;
     private String to;
@@ -22,6 +23,7 @@ public class BusRoute {
         this.date = date;
         this.totalSeats = totalSeats;
         this.price = price;
+        this.availableSeats = totalSeats;
     }
 
     public int getRouteId() {
@@ -66,22 +68,16 @@ public class BusRoute {
     public void setTotalSeats(int totalSeats) {
         this.totalSeats = totalSeats;
     }
-    public int getAvailableSeats() {
-        return availableSeats;
-    }
-    public void setAvailableSeats(int availableSeats) {
-        this.availableSeats = availableSeats;
-    }
     public double getPrice() {
         return price;
     }
     public void setPrice(double price) {
         this.price = price;
     }
-
-
-    @Override
-    public String toString() {
-        return " ";
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+    public void setAvailableSeats(int availableSeats) {
+        this.availableSeats = availableSeats;
     }
 }
